@@ -1,9 +1,16 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const postRoutes = require('./routes/postRoutes');
 
 const app = express();
+
+// CORS
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:4200',
+  credentials: true,
+}));
 
 // Body parser
 app.use(express.json());

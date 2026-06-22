@@ -11,15 +11,9 @@ mongoose.connect(process.env.MONGODB_URI);
 const users = [
   {
     name: 'Admin User',
-    email: 'admin@example.com',
-    password: 'password123',
+    email: 'admin@gmail.com',
+    password: '123456789',
     role: 'admin'
-  },
-  {
-    name: 'Normal User',
-    email: 'user@example.com',
-    password: 'password123',
-    role: 'user'
   }
 ];
 

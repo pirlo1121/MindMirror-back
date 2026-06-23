@@ -1,5 +1,6 @@
 const Post = require('../models/Post');
 const slugify = require('slugify');
+const { notifyNewPost } = require('../services/notificationService');
 
 // @desc    Get all posts
 // @route   GET /api/posts
@@ -62,6 +63,11 @@ exports.createPost = async (req, res) => {
 
     const post = await Post.create(req.body);
 
+    // Si el post se crea directamente como publicado, notificar a los subscriptores
+    if (post.status === 'published') {
+      notifyNewPost(post);
+    }
+
     res.status(201).json({ success: true, data: post });
   } catch (error) {
     // Handle Mongoose validation errors
@@ -89,10 +95,17 @@ exports.updatePost = async (req, res) => {
       return res.status(403).json({ success: false, error: 'User not authorized to update this post' });
     }
 
+    const wasDraft = post.status === 'draft';
+
     post = await Post.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true
     });
+
+    // Si era borrador y ahora está publicado, notificar
+    if (wasDraft && post.status === 'published') {
+      notifyNewPost(post);
+    }
 
     res.status(200).json({ success: true, data: post });
   } catch (error) {
@@ -148,6 +161,9 @@ exports.publishPost = async (req, res) => {
       { status: 'published' },
       { new: true, runValidators: true }
     );
+
+    // Notificar a los subscriptores sobre el nuevo post
+    notifyNewPost(post);
 
     res.status(200).json({ success: true, data: post });
   } catch (error) {

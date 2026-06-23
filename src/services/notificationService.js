@@ -28,40 +28,65 @@ const notifyNewPost = async (post) => {
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Aware - Nuevo artículo</title>
       </head>
-      <body style="font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0;">
+      <body style="font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 0;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="min-width: 100%;">
           <tr>
             <td align="center" style="padding: 40px 20px;">
-              <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background: #ffffff; border-radius: 8px; overflow: hidden;">
+              <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06);">
+
+                <!-- Header -->
                 <tr>
-                  <td style="padding: 40px 30px;">
-                    <h1 style="color: #333; font-size: 24px; margin: 0 0 8px 0;">
-                      ¡Nuevo artículo publicado!
+                  <td style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 32px 30px; text-align: center;">
+                    <h1 style="color: #ffffff; font-size: 22px; font-weight: 700; margin: 0; letter-spacing: 1px;">
+                      Aware
                     </h1>
-                    <p style="color: #666; font-size: 14px; margin: 0 0 24px 0;">
-                      Hola, <strong>${subscriberName}</strong>
+                    <p style="color: rgba(255,255,255,0.7); font-size: 13px; margin: 6px 0 0 0; letter-spacing: 0.5px;">
+                      NUEVO ARTÍCULO
                     </p>
-                    <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
-                    <h2 style="color: #222; font-size: 20px; margin: 0 0 12px 0;">
-                      ${post.title}
-                    </h2>
-                    ${post.excerpt ? `<p style="color: #555; font-size: 15px; line-height: 1.6; margin: 0 0 24px 0;">${post.excerpt}</p>` : ''}
-                    <table role="presentation" cellpadding="0" cellspacing="0">
+                  </td>
+                </tr>
+
+                <!-- Content -->
+                <tr>
+                  <td style="padding: 36px 30px 24px;">
+                    <p style="color: #4a4a6a; font-size: 15px; margin: 0 0 4px 0;">
+                      Hola, <strong style="color: #1a1a2e;">${subscriberName}</strong>
+                    </p>
+                    <p style="color: #6b6b8a; font-size: 14px; margin: 0 0 20px 0;">
+                      Hemos publicado un nuevo artículo:
+                    </p>
+
+                    <div style="background: #f8f9fc; border-left: 4px solid #1a1a2e; border-radius: 8px; padding: 20px 24px; margin-bottom: 24px;">
+                      <h2 style="color: #1a1a2e; font-size: 20px; margin: 0 0 8px 0; line-height: 1.4;">
+                        ${post.title}
+                      </h2>
+                      ${post.excerpt ? `<p style="color: #555; font-size: 14px; line-height: 1.7; margin: 0;">${post.excerpt}</p>` : ''}
+                    </div>
+
+                    <table role="presentation" cellpadding="0" cellspacing="0" align="center">
                       <tr>
-                        <td style="background: #0066cc; border-radius: 6px;">
-                          <a href="${postUrl}" target="_blank" style="display: inline-block; padding: 12px 28px; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: bold;">
-                            Leer artículo
+                        <td style="background: #1a1a2e; border-radius: 8px;">
+                          <a href="${postUrl}" target="_blank" style="display: inline-block; padding: 14px 36px; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; letter-spacing: 0.3px;">
+                            Leer artículo completo
                           </a>
                         </td>
                       </tr>
                     </table>
                   </td>
                 </tr>
+
+                <!-- Footer -->
                 <tr>
-                  <td style="background: #f8f8f8; padding: 20px 30px;">
-                    <p style="color: #999; font-size: 12px; margin: 0;">
-                      Si ya no deseas recibir estos correos, puedes darte de baja desde tu panel de suscripción.
+                  <td style="background: #f8f9fc; padding: 24px 30px;">
+                    <p style="color: #999; font-size: 12px; line-height: 1.6; margin: 0;">
+                      Estás recibiendo este correo porque te suscribiste a Aware.
+                      Si prefieres no recibir más notificaciones, puedes
+                      <a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/unsubscribe" target="_blank" style="color: #1a1a2e; text-decoration: underline; font-weight: 600;">cancelar tu suscripción aquí</a>.
+                    </p>
+                    <p style="color: #bbb; font-size: 11px; margin: 12px 0 0 0;">
+                      Aware &copy; ${new Date().getFullYear()} &mdash; Todos los derechos reservados.
                     </p>
                   </td>
                 </tr>

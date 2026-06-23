@@ -43,7 +43,7 @@ exports.getPostBySlug = async (req, res) => {
 // @desc    Create new post
 // @route   POST /api/posts
 // @access  Private
-exports.opencodecreatePost = async (req, res) => {
+exports.createPost = async (req, res) => {
   try {
     // Add user to req.body
     req.body.author = req.user.id;

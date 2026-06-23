@@ -39,6 +39,22 @@ const validateLogin = [
     .escape()
 ];
 
+// Validation rules for subscriber registration
+const validateSubscriber = [
+  check('name')
+    .trim()
+    .notEmpty()
+    .withMessage('Name is required')
+    .escape(),
+  check('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required')
+    .isEmail()
+    .withMessage('Please include a valid email')
+    .normalizeEmail(),
+];
+
 // Middleware to check validation results
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
@@ -52,5 +68,6 @@ const handleValidationErrors = (req, res, next) => {
 module.exports = {
   validateRegister,
   validateLogin,
+  validateSubscriber,
   handleValidationErrors
 };

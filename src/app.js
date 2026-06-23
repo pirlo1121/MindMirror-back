@@ -3,6 +3,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const postRoutes = require('./routes/postRoutes');
+const subscriberRoutes = require('./routes/subscriberRoutes');
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(cookieParser());
 // Mount routers
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
+app.use('/api/subscribers', subscriberRoutes);
 
 // Base route
 app.get('/', (req, res) => {

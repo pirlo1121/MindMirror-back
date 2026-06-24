@@ -8,7 +8,7 @@ const { notifyNewPost } = require('../services/notificationService');
 exports.getPosts = async (req, res) => {
   try {
     let query = { status: 'published' };
-    
+
     // If admin, they can see all posts
     if (req.user && req.user.role === 'admin') {
       query = {};
@@ -47,10 +47,14 @@ exports.getPostBySlug = async (req, res) => {
 exports.createPost = async (req, res) => {
   try {
     // Add user to req.body
-    req.body.author = req.user.id;
+    const data = JSON.parse(req.body.data);
+    data.author = req.user.id;
+    console.log('file', req.file)
 
+    data.coverImage = req.file.location;
     // Auto-generate slug from title
-    let slug = slugify(req.body.title, { lower: true, strict: true });
+    console.log('titulo', data.title)
+    let slug = slugify(data.title, { lower: true, strict: true });
     let counter = 1;
     let baseSlug = slug;
 
@@ -59,9 +63,11 @@ exports.createPost = async (req, res) => {
       counter++;
     }
 
-    req.body.slug = slug;
+    data.slug = slug;
 
-    const post = await Post.create(req.body);
+    console.log(data)
+
+    const post = await Post.create(data);
 
     // Si el post se crea directamente como publicado, notificar a los subscriptores
     if (post.status === 'published') {
@@ -70,6 +76,8 @@ exports.createPost = async (req, res) => {
 
     res.status(201).json({ success: true, data: post });
   } catch (error) {
+    console.log(error)
+
     // Handle Mongoose validation errors
     if (error.name === 'ValidationError') {
       const messages = Object.values(error.errors).map(val => val.message);

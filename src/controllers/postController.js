@@ -46,8 +46,20 @@ exports.getPostBySlug = async (req, res) => {
 // @access  Private
 exports.createPost = async (req, res) => {
   try {
-    // Add user to req.body
-    const data = JSON.parse(req.body.data);
+    // Add user to req.body con postman
+    // const data = JSON.parse(req.body.data); 
+
+    // sin postman
+    const data = req.body
+
+    // Parse JSON-stringified fields (multipart/form-data sends all values as strings)
+    if (typeof data.tags === 'string') {
+      try { data.tags = JSON.parse(data.tags); } catch (e) { /* leave as-is */ }
+    }
+    if (typeof data.content === 'string') {
+      try { data.content = JSON.parse(data.content); } catch (e) { /* leave as-is */ }
+    }
+
     data.author = req.user.id;
     console.log('file', req.file)
 

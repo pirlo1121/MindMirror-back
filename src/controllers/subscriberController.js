@@ -98,7 +98,8 @@ exports.remove = async (req, res) => {
 // @access  Private/Admin
 exports.getAllSubscribers = async (req, res) => {
   try {
-    const subscribers = await Subscriber.find();
+    const subscribers = await Subscriber.find().lean();
+    res.set('Cache-Control', 'private, no-cache');
     res.status(200).json({ success: true, data: subscribers });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });

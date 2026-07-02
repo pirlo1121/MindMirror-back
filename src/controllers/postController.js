@@ -4,7 +4,7 @@ const { notifyNewPost } = require('../services/notificationService');
 const { deletePostImages } = require('../services/s3CleanupService');
 const { sanitizePost } = require('../middlewares/sanitizeMiddleware');
 
-// @desc    Get all posts
+// @desc    Get all posts (con paginación, lean, y caché)
 // @route   GET /api/posts
 // @access  Public (only published) or Private (all for admin/author)
 exports.getPosts = async (req, res) => {
@@ -16,11 +16,29 @@ exports.getPosts = async (req, res) => {
       query = {};
     }
 
-    const posts = await Post.find(query)
-      .populate('author', 'name email')
-      .sort({ publishedAt: -1, createdAt: -1 });
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 50));
+    const skip = (page - 1) * limit;
 
-    res.status(200).json({ success: true, count: posts.length, data: posts });
+    const [posts, total] = await Promise.all([
+      Post.find(query)
+        .populate('author', 'name email')
+        .sort({ publishedAt: -1, createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      Post.countDocuments(query),
+    ]);
+
+    res.set('Cache-Control', 'public, max-age=30');
+    res.status(200).json({
+      success: true,
+      count: total,
+      page,
+      totalPages: Math.ceil(total / limit),
+      hasMore: skip + limit < total,
+      data: posts,
+    });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -31,12 +49,15 @@ exports.getPosts = async (req, res) => {
 // @access  Public
 exports.getPostBySlug = async (req, res) => {
   try {
-    const post = await Post.findOne({ slug: req.params.slug }).populate('author', 'name email');
+    const post = await Post.findOne({ slug: req.params.slug })
+      .populate('author', 'name email')
+      .lean();
 
     if (!post) {
       return res.status(404).json({ success: false, error: 'Post not found' });
     }
 
+    res.set('Cache-Control', 'public, max-age=60');
     res.status(200).json({ success: true, data: post });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -197,11 +218,29 @@ exports.getDrafts = async (req, res) => {
       query.author = req.user.id;
     }
 
-    const posts = await Post.find(query)
-      .populate('author', 'name email')
-      .sort({ updatedAt: -1 });
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 50));
+    const skip = (page - 1) * limit;
 
-    res.status(200).json({ success: true, count: posts.length, data: posts });
+    const [posts, total] = await Promise.all([
+      Post.find(query)
+        .populate('author', 'name email')
+        .sort({ updatedAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      Post.countDocuments(query),
+    ]);
+
+    res.set('Cache-Control', 'private, max-age=10');
+    res.status(200).json({
+      success: true,
+      count: total,
+      page,
+      totalPages: Math.ceil(total / limit),
+      hasMore: skip + limit < total,
+      data: posts,
+    });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

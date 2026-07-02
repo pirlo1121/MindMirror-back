@@ -2,6 +2,7 @@ const express = require('express');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const compression = require('compression');
 const authRoutes = require('./routes/authRoutes');
 const postRoutes = require('./routes/postRoutes');
 const subscriberRoutes = require('./routes/subscriberRoutes');
@@ -12,14 +13,17 @@ const app = express();
 // Security headers
 app.use(helmet());
 
+// Compresión gzip de respuestas
+app.use(compression());
+
 // CORS
 app.use(cors({
   origin: process.env.CLIENT_URL,
   credentials: true,
 }));
 
-// Body parser
-app.use(express.json());
+// Body parser con límite de tamaño
+app.use(express.json({ limit: '10mb' }));
 
 // Cookie parser
 app.use(cookieParser());

@@ -2,7 +2,6 @@ const express = require('express');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const { csrfProtection } = require('./middlewares/csrfMiddleware');
 const authRoutes = require('./routes/authRoutes');
 const postRoutes = require('./routes/postRoutes');
 const subscriberRoutes = require('./routes/subscriberRoutes');
@@ -24,9 +23,6 @@ app.use(express.json());
 
 // Cookie parser
 app.use(cookieParser());
-
-// CSRF protection (generates token cookie, validates on state-changing requests)
-app.use(csrfProtection);
 
 // Mount routers
 app.use('/api/auth', authRoutes);

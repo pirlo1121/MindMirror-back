@@ -101,7 +101,7 @@ exports.logout = (req, res) => {
 // @access  Private
 exports.getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).lean();
+    const user = await User.findById(req.user._id).lean();
     res.set('Cache-Control', 'private, no-cache');
     res.status(200).json({
       success: true,

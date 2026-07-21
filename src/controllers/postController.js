@@ -106,7 +106,7 @@ exports.createPost = async (req, res) => {
 
     sanitizePost(data);
 
-    data.author = req.user.id;
+    data.author = req.user._id;
 
     // Handle uploaded files (multipart fields → req.files)
     if (req.files) {
@@ -170,7 +170,7 @@ exports.updatePost = async (req, res) => {
     }
 
     // Make sure user is post owner or admin
-    if (post.author.toString() !== req.user.id && req.user.role !== 'admin') {
+    if (post.author.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({ success: false, error: 'User not authorized to update this post' });
     }
 
@@ -235,7 +235,7 @@ exports.getDrafts = async (req, res) => {
     let query = { status: 'draft' };
 
     if (req.user.role !== 'admin') {
-      query.author = req.user.id;
+      query.author = req.user._id;
     }
 
     const page = Math.max(1, parseInt(req.query.page) || 1);
@@ -277,7 +277,7 @@ exports.publishPost = async (req, res) => {
       return res.status(404).json({ success: false, error: 'Post not found' });
     }
 
-    if (post.author.toString() !== req.user.id && req.user.role !== 'admin') {
+    if (post.author.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({ success: false, error: 'User not authorized to publish this post' });
     }
 
@@ -314,7 +314,7 @@ exports.deletePost = async (req, res) => {
     }
 
     // Make sure user is post owner or admin
-    if (post.author.toString() !== req.user.id && req.user.role !== 'admin') {
+    if (post.author.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({ success: false, error: 'User not authorized to delete this post' });
     }
 

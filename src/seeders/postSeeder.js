@@ -16,7 +16,7 @@ const posts = [
     'La motivación es variable. La disciplina permite actuar incluso cuando las ganas desaparecen.',
   coverImage:
     'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1200&q=80&fm=webp',
-  status: 'published',
+  status: 'draft',
   tags: ['disciplina', 'habitos', 'desarrollo-personal'],
   content: [
     {
@@ -79,7 +79,7 @@ const posts = [
     'Descansar no significa perder el tiempo. El rendimiento sostenible depende de la recuperación.',
   coverImage:
     'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200&q=80&fm=webp',
-  status: 'published',
+  status: 'draft',
   tags: ['salud', 'productividad', 'bienestar'],
   content: [
     {
@@ -128,7 +128,7 @@ const posts = [
     'En una época llena de estímulos, aprender a concentrarse es una ventaja competitiva.',
   coverImage:
     'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80&fm=webp',
-  status: 'published',
+  status: 'draft',
   tags: ['productividad', 'enfoque', 'tecnologia'],
   content: [
     {

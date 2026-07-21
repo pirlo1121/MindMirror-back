@@ -34,7 +34,7 @@ const notifyNewPost = async (post) => {
 
     console.log(`[NotificationService] ${subscribers.length} subscriptores activos encontrados.`);
 
-    const postUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/posts/${post.slug}`;
+    const postUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/post/${encodeURIComponent(post.slug)}/`;
     const serverUrl = process.env.SERVER_URL || `http://localhost:${process.env.PORT || 5000}`;
 
     const buildUnsubscribeUrl = (subscriberId) => {

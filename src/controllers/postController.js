@@ -1,6 +1,7 @@
 const Post = require('../models/Post');
 const slugify = require('slugify');
 const { notifyNewPost } = require('../services/notificationService');
+const { triggerLandingRedeploy } = require('../services/deployService');
 const { deletePostImages } = require('../services/s3CleanupService');
 const { sanitizePost } = require('../middlewares/sanitizeMiddleware');
 const postsCache = require('../utils/simpleCache');
@@ -143,8 +144,10 @@ exports.createPost = async (req, res) => {
     postsCache.clear();
 
     // Si el post se crea directamente como publicado, notificar a los subscriptores
+    // y disparar el redeploy del landing estático
     if (post.status === 'published') {
       notifyNewPost(post);
+      triggerLandingRedeploy();
     }
 
     res.status(201).json({ success: true, data: post });
@@ -213,9 +216,10 @@ exports.updatePost = async (req, res) => {
 
     postsCache.clear();
 
-    // Si era borrador y ahora está publicado, notificar
+    // Si era borrador y ahora está publicado, notificar y redeployar el landing
     if (wasDraft && post.status === 'published') {
       notifyNewPost(post);
+      triggerLandingRedeploy();
     }
 
     res.status(200).json({ success: true, data: post });
@@ -293,8 +297,9 @@ exports.publishPost = async (req, res) => {
 
     postsCache.clear();
 
-    // Notificar a los subscriptores sobre el nuevo post
+    // Notificar a los subscriptores sobre el nuevo post y redeployar el landing
     notifyNewPost(post);
+    triggerLandingRedeploy();
 
     res.status(200).json({ success: true, data: post });
   } catch (error) {

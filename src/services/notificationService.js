@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const Subscriber = require('../models/Subscriber');
 const { sendEmail } = require('./emailService');
 
@@ -34,8 +35,16 @@ const notifyNewPost = async (post) => {
     console.log(`[NotificationService] ${subscribers.length} subscriptores activos encontrados.`);
 
     const postUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/posts/${post.slug}`;
+    const serverUrl = process.env.SERVER_URL || `http://localhost:${process.env.PORT || 5000}`;
 
-    const htmlTemplate = (subscriberName) => `
+    const buildUnsubscribeUrl = (subscriberId) => {
+      const token = jwt.sign({ id: subscriberId, purpose: 'unsubscribe' }, process.env.JWT_SECRET, {
+        expiresIn: '365d',
+      });
+      return `${serverUrl}/api/subscribers/unsubscribe?token=${token}`;
+    };
+
+    const htmlTemplate = (subscriberName, unsubscribeUrl) => `
       <!DOCTYPE html>
       <html>
       <head>
@@ -96,7 +105,7 @@ const notifyNewPost = async (post) => {
                     <p style="color: #999; font-size: 12px; line-height: 1.6; margin: 0;">
                       Estás recibiendo este correo porque te suscribiste a Aware.
                       Si prefieres no recibir más notificaciones, puedes
-                      <a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/unsubscribe" target="_blank" style="color: #1a1a2e; text-decoration: underline; font-weight: 600;">cancelar tu suscripción aquí</a>.
+                      <a href="${unsubscribeUrl}" target="_blank" style="color: #1a1a2e; text-decoration: underline; font-weight: 600;">cancelar tu suscripción aquí</a>.
                     </p>
                     <p style="color: #bbb; font-size: 11px; margin: 12px 0 0 0;">
                       Aware &copy; ${new Date().getFullYear()} &mdash; Todos los derechos reservados.
@@ -115,7 +124,7 @@ const notifyNewPost = async (post) => {
       sendEmail({
         to: sub.email,
         subject: `Nuevo artículo: ${post.title}`,
-        html: htmlTemplate(sub.name),
+        html: htmlTemplate(sub.name, buildUnsubscribeUrl(sub._id)),
       })
     );
 

@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const Subscriber = require('../models/Subscriber');
 
 // @desc    Register a new subscriber
@@ -25,6 +26,41 @@ exports.register = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// @desc    Unsubscribe a subscriber via emailed link and redirect to the confirmation page
+// @route   GET /api/subscribers/unsubscribe
+// @access  Public
+exports.unsubscribe = async (req, res) => {
+  const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+  const { token } = req.query;
+
+  if (!token) {
+    return res.redirect(`${clientUrl}/unsubscribe?status=error`);
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (decoded.purpose !== 'unsubscribe' || !decoded.id) {
+      return res.redirect(`${clientUrl}/unsubscribe?status=error`);
+    }
+
+    const subscriber = await Subscriber.findById(decoded.id);
+
+    if (!subscriber) {
+      return res.redirect(`${clientUrl}/unsubscribe?status=error`);
+    }
+
+    if (subscriber.status !== 'paused') {
+      subscriber.status = 'paused';
+      await subscriber.save();
+    }
+
+    return res.redirect(`${clientUrl}/unsubscribe?status=success`);
+  } catch (error) {
+    return res.redirect(`${clientUrl}/unsubscribe?status=error`);
   }
 };
 
